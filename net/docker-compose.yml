@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+    server:
+        user: root
+        privileged: True
+        cap_add: 
+            - NET_ADMIN
+        build: ./server
+        command: ./script.sh eth0 127.0.0.1:8081 127.0.0.1:8082 127.0.0.1:8083 127.0.0.1:8084 && iperf3 -s -p 8080 && tc -s qdisc ls dev eth0
+        ports: 
+            - 8080:8080
+        networks:
+            - script_net
+
+    zone_1:
+        build: ./1
+        command: iperf3 -p 8081 -c 127.0.0.1:8080 
+        ports: 
+            - 8081:8081
+        networks:
+            - script_net
+    zone_2:
+        build: ./2
+        command: iperf3 -p 8082 -c 127.0.0.1:8080 
+        ports: 
+            - 8082:8082
+        networks:
+            - script_net
+    zone_3:
+        build: ./3
+        command: iperf3 -p 8083 -c 127.0.0.1:8080 
+        ports: 
+            - 8083:8083
+        networks:
+            - script_net
+    zone_4:
+        build: ./4
+        command: iperf3 -p 8084 -c 127.0.0.1:8080 
+        ports: 
+            - 8084:8084
+        networks:
+            - script_net
+networks:
+    script_net:
